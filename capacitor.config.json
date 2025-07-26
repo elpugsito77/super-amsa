@@ -2,4 +2,19 @@
   "appId": "com.amsa.scanner",
   "appName": "super-amsa",
   "webDir": "dist"
+{
+  ...
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 3000,
+      "launchAutoHide": true,
+      "backgroundColor": "#fff7ed",
+      "androidSplashResourceName": "splash",
+      "androidScaleType": "CENTER_CROP",
+      "showSpinner": true,
+      "androidSpinnerStyle": "large",
+      "spinnerColor": "#ea580c"
+    }
+  }
 }
+
