@@ -1,8 +1,72 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { ScanLine, FileDown, Table, ShoppingCart, AlertCircle, Camera, Upload, X, Trash2, Sparkles, CheckSquare, Search, Download } from 'lucide-react';
+import { ScanLine, FileDown, Table, ShoppingCart, AlertCircle, Camera, Upload, X, Trash2, Sparkles, CheckSquare, Search, Download, LogIn } from 'lucide-react';
+
+// Login Component
+const LoginComponent = ({ onLoginSuccess }) => {
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+
+  const handleLogin = () => {
+    if (username === 'max' && password === '12345678') {
+      setError('');
+      onLoginSuccess();
+    } else {
+      setError('Usuario o contraseña incorrectos.');
+    }
+  };
+
+  return (
+    <div className="bg-orange-100 flex items-center justify-center min-h-screen">
+      <div className="w-full max-w-sm p-8 space-y-6 bg-white rounded-xl shadow-lg">
+        <div className="text-center">
+          <ShoppingCart className="w-16 h-16 mx-auto text-orange-600" />
+          <h1 className="text-3xl font-bold text-orange-900 mt-4">Mini Super Amsa</h1>
+          <p className="text-orange-700">Por favor, inicia sesión</p>
+        </div>
+        
+        <div className="space-y-4">
+          <div>
+            <label className="text-sm font-bold text-orange-800">Usuario</label>
+            <input
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              className="w-full px-4 py-2 mt-2 text-orange-900 bg-orange-50 border border-orange-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+              placeholder="Usuario"
+            />
+          </div>
+          <div>
+            <label className="text-sm font-bold text-orange-800">Contraseña</label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handleLogin()}
+              className="w-full px-4 py-2 mt-2 text-orange-900 bg-orange-50 border border-orange-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+              placeholder="••••••••"
+            />
+          </div>
+        </div>
+
+        {error && <p className="text-sm text-center text-red-600">{error}</p>}
+
+        <button
+          onClick={handleLogin}
+          className="w-full py-3 font-bold text-white bg-orange-600 rounded-lg hover:bg-orange-700 transition-all duration-200 flex items-center justify-center gap-2"
+        >
+          <LogIn size={20} />
+          Entrar
+        </button>
+      </div>
+    </div>
+  );
+};
+
 
 // Main App Component
 export default function App() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   // State to hold the image files and their previews
   const [imageFiles, setImageFiles] = useState([]);
   // State to hold the parsed items from the receipt (local state)
@@ -134,7 +198,7 @@ export default function App() {
           }
         };
 
-        const apiKey = "AIzaSyCfyaDQA8p8m_kx-_sVzZGmcVtcm4PfETw";
+        const apiKey = import.meta.env.VITE_GEMINI_API_KEY || ""; // Use your API key here
         const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
 
         const response = await fetch(apiUrl, {
@@ -200,9 +264,6 @@ export default function App() {
     }
   };
 
-  /**
-   * Toggles the 'isChecked' state of an item by its unique ID.
-   */
   const handleToggleCheck = (idToToggle) => {
     const updatedItems = items.map((item) => {
         if (item.id === idToToggle) {
@@ -213,9 +274,6 @@ export default function App() {
     setItems(updatedItems);
   };
 
-  /**
-   * Handles image upload from file input.
-   */
   const handleFileSelect = (event) => {
     const files = Array.from(event.target.files);
     if (files.length > 0) {
@@ -228,9 +286,6 @@ export default function App() {
     }
   };
 
-  /**
-   * Opens the device camera and displays the stream.
-   */
   const openCamera = async () => {
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
         setError("La API de la cámara no es compatible con este navegador.");
@@ -246,9 +301,6 @@ export default function App() {
     }
   };
 
-  /**
-   * Closes the camera view and stops the video stream.
-   */
   const closeCamera = () => {
     if (cameraStream) {
         cameraStream.getTracks().forEach(track => track.stop());
@@ -257,9 +309,6 @@ export default function App() {
     setIsCameraOpen(false);
   };
 
-  /**
-   * Captures a photo from the video stream and adds it to the list.
-   */
   const takePicture = () => {
     if (videoRef.current && canvasRef.current) {
         const video = videoRef.current;
@@ -283,17 +332,10 @@ export default function App() {
     }
   };
 
-  /**
-   * Deletes an image from the list.
-   */
   const handleDeleteImage = (idToDelete) => {
       setImageFiles(prev => prev.filter(img => img.id !== idToDelete));
   };
 
-
-  /**
-   * Handles exporting the parsed data to an Excel file.
-   */
   const handleExportExcel = () => {
     if (typeof window.XLSX === 'undefined') {
       setError('La librería para exportar (XLSX.js) aún no está cargada.');
@@ -321,9 +363,6 @@ export default function App() {
     window.XLSX.writeFile(workbook, 'lista_de_compras.xlsx');
   };
 
-  /**
-   * Clears all inputs and results.
-   */
   const handleClear = () => {
     setImageFiles([]);
     setItems([]);
@@ -332,9 +371,6 @@ export default function App() {
     setSearchQuery('');
   };
 
-  /**
-   * Triggers the PWA installation prompt.
-   */
   const handleInstallClick = () => {
     if (installPrompt) {
       installPrompt.prompt();
@@ -349,9 +385,6 @@ export default function App() {
     }
   };
 
-  /**
-   * Handles saving changes from an editable cell.
-   */
   const handleCellEdit = (itemId, field, newValue) => {
     const updatedItems = items.map(item => {
         if (item.id === itemId) {
@@ -391,10 +424,13 @@ export default function App() {
   );
 
   const totalGeneral = items.reduce((sum, item) => sum + (item.precioTotal || 0), 0);
+  
+  if (!isAuthenticated) {
+    return <LoginComponent onLoginSuccess={() => setIsAuthenticated(true)} />;
+  }
 
   return (
     <div className="bg-orange-100 text-orange-900 min-h-screen font-sans p-4 sm:p-6 md:p-8">
-      {/* Camera Modal */}
       {isCameraOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-90 flex flex-col items-center justify-center z-50 p-4">
             <video ref={videoRef} autoPlay playsInline className="w-full max-w-4xl h-auto rounded-lg shadow-lg mb-4"></video>
@@ -420,7 +456,6 @@ export default function App() {
           <p className="text-orange-700 mt-2">Scanner Creado Por D.A.C.L</p>
         </header>
 
-        {/* AI Scan Section */}
         <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
           <div className="flex flex-wrap justify-center items-center gap-4">
              <button onClick={openCamera} disabled={isProcessing} className="bg-orange-600 hover:bg-orange-700 text-white font-bold py-3 px-6 rounded-lg flex items-center gap-3 transition-all duration-200 transform hover:scale-105 shadow-md disabled:bg-gray-400 disabled:cursor-not-allowed">
@@ -451,7 +486,6 @@ export default function App() {
               </div>
             </div>
           )}
-          {/* Image Thumbnail Gallery */}
           {imageFiles.length > 0 && (
             <div className="mt-6">
                 <h3 className="text-lg font-medium text-orange-800 mb-3 text-center">Fotos Cargadas</h3>
@@ -493,7 +527,6 @@ export default function App() {
               </button>
             </div>
 
-            {/* Search Bar */}
             <div className="relative mb-4">
                 <input
                     type="text"
