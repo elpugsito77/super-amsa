@@ -198,7 +198,7 @@ export default function App() {
           }
         };
 
-        const apiKey = import.meta.env.VITE_GEMINI_API_KEY || ""; // Use your API key here
+        const apiKey = import.meta.env.VITE_GEMINI_API_KEY || "AIzaSyCfyaDQA8p8m_kx-_sVzZGmcVtcm4PfETw"; // Use your API key here
         const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
 
         const response = await fetch(apiUrl, {
